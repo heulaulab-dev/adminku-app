@@ -8,7 +8,7 @@ import { quotationSchema, type QuotationInput } from '@/lib/schemas';
 import { formatQuotation, formatMoney } from '@/lib/formatters';
 import { useToast } from '@/components/shared/toast';
 import { TemplateModal } from '@/components/shared/template-modal';
-import { useTemplates } from '@/lib/store';
+import { useTemplates, useQuotationHistory, useUsageStats } from '@/lib/store';
 import { cn } from '@/lib/utils';
 
 export function QuotationForm() {
@@ -18,6 +18,8 @@ export function QuotationForm() {
   const [templatePreview, setTemplatePreview] = useState('');
   const { showToast } = useToast();
   const { addTemplate } = useTemplates();
+  const { addQuotation } = useQuotationHistory();
+  const { recordUsage } = useUsageStats();
 
   const {
     register,
@@ -47,6 +49,19 @@ export function QuotationForm() {
     const formatted = formatQuotation(data);
     setPreview(formatted);
     showToast('Quotation sudah jadi!');
+
+    // Save to history
+    const totalAmount = data.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    addQuotation({
+      customerName: data.customerName,
+      customerPhone: data.customerPhone,
+      customerAddress: data.customerAddress,
+      items: data.items,
+      notes: data.notes,
+      total: totalAmount,
+      formattedMessage: formatted,
+    });
+    recordUsage('quotation');
   };
 
   const handleCopy = async () => {
