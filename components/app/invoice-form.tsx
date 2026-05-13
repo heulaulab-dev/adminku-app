@@ -3,13 +3,15 @@
 import { useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus, Trash2, Copy, Share2, Check, Bookmark } from 'lucide-react';
+import { Plus, Trash2, Copy, Share2, Check, Bookmark, Package } from 'lucide-react';
 import { invoiceSchema, type InvoiceInput } from '@/lib/schemas';
 import { formatInvoice, formatMoney } from '@/lib/formatters';
 import { useToast } from '@/components/shared/toast';
 import { INVOICE_DEFAULTS } from '@/lib/constants';
 import { TemplateModal } from '@/components/shared/template-modal';
-import { useTemplates, useInvoiceHistory, useUsageStats } from '@/lib/store';
+import { ProductPickerModal } from './product-picker-modal';
+import { useTemplates, useInvoiceHistory, useUsageStats, useProducts } from '@/lib/store';
+import type { Product, Customer } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 export function InvoiceForm() {
@@ -17,10 +19,12 @@ export function InvoiceForm() {
   const [copied, setCopied] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [templatePreview, setTemplatePreview] = useState('');
+  const [showProductPicker, setShowProductPicker] = useState(false);
   const { showToast } = useToast();
   const { addTemplate } = useTemplates();
   const { addInvoice } = useInvoiceHistory();
   const { recordUsage } = useUsageStats();
+  const { products } = useProducts();
 
   const invoiceNumber = `${INVOICE_DEFAULTS.prefix}-${Date.now().toString(36).toUpperCase()}`;
 
@@ -29,6 +33,7 @@ export function InvoiceForm() {
     control,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<InvoiceInput>({
     resolver: zodResolver(invoiceSchema),
@@ -71,6 +76,21 @@ export function InvoiceForm() {
     recordUsage('invoice');
   };
 
+  const handleAddProducts = (selectedProducts: Product[], customer?: Customer) => {
+    // Append each product as new item
+    selectedProducts.forEach((product) => {
+      append({ id: Math.random().toString(), name: product.name, quantity: 1, price: product.price });
+    });
+
+    // Auto-fill customer if selected
+    if (customer) {
+      setValue('customerName', customer.name);
+      setValue('customerPhone', customer.phone);
+    }
+
+    showToast(`${selectedProducts.length} produk ditambahkan!`);
+  };
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(preview);
@@ -95,7 +115,8 @@ export function InvoiceForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Invoice Number */}
       <div className="rounded-xl border border-[var(--color-primary)]/30 bg-[var(--color-primary-light)] p-4">
         <div className="flex items-center justify-between">
@@ -136,14 +157,26 @@ export function InvoiceForm() {
       <div className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-[var(--color-text-primary)]">Daftar Produk</h3>
-          <button
-            type="button"
-            onClick={() => append({ id: Math.random().toString(), name: '', quantity: 1, price: 0 })}
-            className="flex items-center gap-1 text-sm font-medium text-[var(--color-primary)]"
-          >
-            <Plus className="h-4 w-4" />
-            Tambah Produk
-          </button>
+          <div className="flex gap-2">
+            {products.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setShowProductPicker(true)}
+                className="flex items-center gap-1 rounded-lg border border-[var(--color-primary)]/30 px-3 py-1.5 text-sm font-medium text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10"
+              >
+                <Package className="h-4 w-4" />
+                Katalog
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => append({ id: Math.random().toString(), name: '', quantity: 1, price: 0 })}
+              className="flex items-center gap-1 text-sm font-medium text-[var(--color-primary)]"
+            >
+              <Plus className="h-4 w-4" />
+              Tambah Produk
+            </button>
+          </div>
         </div>
 
         {fields.map((field, index) => (
@@ -303,5 +336,12 @@ export function InvoiceForm() {
         title="Simpan Invoice sebagai Template"
       />
     </form>
+
+    <ProductPickerModal
+      isOpen={showProductPicker}
+      onClose={() => setShowProductPicker(false)}
+      onAdd={handleAddProducts}
+    />
+    </>
   );
 }
