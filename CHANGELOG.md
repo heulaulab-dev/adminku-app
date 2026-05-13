@@ -10,9 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Pricing Page** — `/pricing` route with 3 tiers (Gratis, Starter Rp 99rb, Pro Rp 199rb), yearly options with 20% discount
 - **Navbar Pricing Link** — "Harga" link added to landing page navigation
+- **Usage Stats Dashboard** — Streak tracking, total documents created (quotations, invoices, templates)
+- **Quotation/Invoice History** — Saved to localStorage, accessible from /quotes and /invoices pages
+- **Template Categories Filter** — Filter by category: Semua, Salam, Pembayaran, Pengiriman, Penutup
 
 ### Changed
 - **App Shell** — Added logout button with user name/email display in header
+- **Dashboard** — Added stats dashboard component
 
 ### Fixed
 - AGENTS.md feature audit now reflects actual codebase state

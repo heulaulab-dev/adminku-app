@@ -516,77 +516,59 @@ Never exceed budget. Ship smaller features instead of one complex one.
 
 ## FEATURE AUDIT (Codebase vs Roadmap)
 
-> **Updated: 2026-05-13** — Significant progress since initial audit.
+> **Updated: 2026-05-13** — All quick wins and month 1 features complete.
 
 ### Audit Summary (2026-05-13)
 
 | Category | Count | Features |
 |----------|-------|----------|
-| **COMPLETE** | 13 | Message Formatter, Quotation Generator, Invoice Generator, Landing Page, WhatsApp Integration, Template System (full), Auth System (full), Order Recap Generator, Payment Reminder Generator, Shipping Confirmation Generator, Customer Database, PDF Export, Dark Mode |
-| **IN PROGRESS** | 1 | Pricing Page (planned) |
-| **NOT BUILT** | 3+ | Analytics Dashboard, Product Catalog, Team Collaboration |
+| **COMPLETE** | 18 | Message Formatter, Quotation Generator, Invoice Generator, Landing Page, WhatsApp Integration, Template System (full), Auth System (full), Order Recap Generator, Payment Reminder Generator, Shipping Confirmation Generator, Customer Database, PDF Export, Dark Mode, Logout Button, User Display, Pricing Page, Quotation/Invoice History, Usage Stats Dashboard, Template Categories |
+
+| **NOT BUILT** | 2 | Product Catalog, Team Collaboration |
 
 ### Completed Features (Built)
 
-#### Core Features (Day 1 MVP) ✅
+#### Core Features ✅
 1. **Message Formatter** — Bold/italic/strikethrough, copy, share to WhatsApp
-2. **Quotation Generator** — Customer info, product list, totals, save as template
-3. **Invoice Generator** — Auto invoice number, payment method, save as template
+2. **Quotation Generator** — Customer info, product list, totals, save as template, history
+3. **Invoice Generator** — Auto invoice number, payment method, save as template, history
 4. **Landing Page** — Hero, features, FAQ, testimonials, footer
 5. **WhatsApp Integration** — Web Share API + clipboard fallback
 
 #### Auth & User Management ✅
-6. **Auth System (Full)** — NextAuth v5 + Google OAuth, middleware protection on `/app` routes
-7. **Login Page** — `/login` route, redirects logged-in users to dashboard
+6. **Auth System (Full)** — NextAuth v5 + Google OAuth, middleware protection
+7. **Login Page** — `/login` route
+8. **Logout Button** — Sign out with redirect
+9. **User Display** — Name/email in header
 
 #### Template System ✅
-8. **Template List** — Search, filter, copy, edit, delete
-9. **Template Modal** — Save/edit templates with name and category
-10. **Default Templates** — 5 starter templates (greeting, payment, shipping, reminder, closing)
+10. **Template List** — Search, categories, copy, edit, delete
+11. **Template Modal** — Save/edit templates
+12. **Default Templates** — 5 starter templates
+13. **Template Categories Filter** — Semua, Salam, Pembayaran, Pengiriman, Penutup
 
-#### Week 1 Features (Already Built) ✅
-11. **Order Recap Generator** — `/app/order-recap`, format order summaries for customers
-12. **Payment Reminder Generator** — `/app/payment-reminder`, auto-format payment reminders
-13. **Shipping Confirmation Generator** — `/app/shipping-confirmation`, tracking info format
+#### Generators ✅
+14. **Order Recap Generator** — `/app/order-recap`
+15. **Payment Reminder Generator** — `/app/payment-reminder`
+16. **Shipping Confirmation Generator** — `/app/shipping-confirmation`
 
-#### Month 1 Features (Already Built) ✅
-14. **Customer Database** — `/app/customers`, CRUD operations, localStorage persistence
-15. **PDF Export** — `lib/pdf.ts`, html2canvas + jsPDF implementation
-16. **Dark Mode** — CSS variables system (toggle in app shell)
+#### Dashboard & Stats ✅
+17. **Usage Stats Dashboard** — Streak tracking, totals for quotations/invoices/templates
+18. **Pricing Page** — `/pricing` with tiered plans
 
-### Critical Gaps to Fix (Current Priorities)
+#### Customer & Utilities ✅
+19. **Customer Database** — CRUD, localStorage
+20. **PDF Export** — html2canvas + jsPDF
+21. **Dark Mode** — CSS variables
 
-1. **Logout Button** - HIGH PRIORITY
-   - Auth is enforced but no logout UI in app shell
-   - Users cannot sign out
-   - **Fix:** Add logout button to app header/dashboard
+### Remaining Roadmap
 
-2. **User Display (Name/Avatar)** - MEDIUM PRIORITY
-   - No user name or avatar shown in app header
-   - Missing personal touch after login
-   - **Fix:** Add user info display in `app-shell.tsx`
-
-3. **Quotation/Invoice History** - MEDIUM PRIORITY
-   - No page for viewing past generated documents
-   - **Fix:** Add history page or use localStorage for recent items
-
-### Completed Week 1 & Month 1 Items
-
-| Priority | Task | Status |
-|----------|------|--------|
-| ~~P0 - Critical~~ | ~~Add "Save as Template" to quotation/invoice forms~~ | ✅ DONE |
-| ~~P1 - High~~ | ~~Add template edit functionality~~ | ✅ DONE |
-| ~~P1 - High~~ | ~~Add auth middleware + logout~~ | ✅ DONE (middleware), ❌ (logout button missing) |
-| ~~P2 - Medium~~ | ~~Add user display (name/avatar)~~ | ❌ PENDING |
-| ~~P2 - Medium~~ | ~~Add quotation history page~~ | ❌ PENDING |
-| ✅ BONUS | Order Recap Generator | ✅ DONE |
-| ✅ BONUS | Payment Reminder Generator | ✅ DONE |
-| ✅ BONUS | Shipping Confirmation Generator | ✅ DONE |
-| ✅ BONUS | Customer Database | ✅ DONE |
-| ✅ BONUS | PDF Export | ✅ DONE |
-| ✅ BONUS | Dark Mode | ✅ DONE |
-
-### Remaining Roadmap Items
+| Feature | Priority | Complexity |
+|---------|----------|------------|
+| Product Catalog | Month 3 | 8/10 |
+| Team Collaboration | Month 3 | 9/10 |
+| AI Message Suggestions | Future | 7/10 |
+| Mobile App (PWA) | Future | 10/10 |
 
 --------------------------------------------------
 # 8. GROWTH STRATEGY
