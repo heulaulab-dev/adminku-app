@@ -57,8 +57,11 @@ export function ProductPickerModal({ isOpen, onClose, onAdd }: ProductPickerModa
     });
   };
 
-  // Get selected products
-  const selectedProducts = products.filter((p) => selectedProductIds.has(p.id));
+  // Get selected products (memoized)
+  const selectedProducts = useMemo(
+    () => products.filter((p) => selectedProductIds.has(p.id)),
+    [products, selectedProductIds]
+  );
 
   // Handle customer selection
   const handleCustomerSelect = (customerId: string) => {
@@ -87,7 +90,7 @@ export function ProductPickerModal({ isOpen, onClose, onAdd }: ProductPickerModa
             </h2>
             {selectedProductIds.size > 0 && (
               <span className="rounded-full bg-[var(--color-primary)] px-2.5 py-0.5 text-xs font-medium text-white">
-                {selectedProductIds.size} dipilih
+                {selectedProductIds.size} produk dipilih
               </span>
             )}
           </div>
@@ -265,7 +268,7 @@ export function ProductPickerModal({ isOpen, onClose, onAdd }: ProductPickerModa
                 : 'bg-[var(--color-text-muted)] cursor-not-allowed'
             )}
           >
-            Tambah
+            {selectedProductIds.size > 0 ? `Tambah ${selectedProductIds.size} Produk` : 'Pilih Produk'}
           </button>
         </div>
       </div>
