@@ -8,7 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Nothing yet
+- **Product Catalog Integration**
+  - `ProductPickerModal` component with multi-select checkboxes
+  - Search by product name or category
+  - Optional customer dropdown for auto-fill
+  - Integrated into quotation form (`/app/quotes/new`)
+  - Integrated into invoice form (`/app/invoices/new`)
+  - Products append to existing items (not replace)
+  - Empty catalog and no-results states handled
 
 ### Changed
 - Nothing yet

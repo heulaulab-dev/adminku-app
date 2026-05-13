@@ -164,9 +164,9 @@ Modal closes, form updated
 
 ## Success Criteria
 
-- [ ] User can multi-select products from catalog
-- [ ] User can optionally select customer to auto-fill
-- [ ] Products append to existing items (not replace)
-- [ ] Both quotation and invoice forms support this
-- [ ] Empty catalog state shows helpful message
-- [ ] Search works for product name and category
+- [x] User can multi-select products from catalog
+- [x] User can optionally select customer to auto-fill
+- [x] Products append to existing items (not replace)
+- [x] Both quotation and invoice forms support this
+- [x] Empty catalog state shows helpful message
+- [x] Search works for product name and category

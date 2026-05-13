@@ -522,9 +522,9 @@ Never exceed budget. Ship smaller features instead of one complex one.
 
 | Category | Count | Features |
 |----------|-------|----------|
-| **COMPLETE** | 18 | Message Formatter, Quotation Generator, Invoice Generator, Landing Page, WhatsApp Integration, Template System (full), Auth System (full), Order Recap Generator, Payment Reminder Generator, Shipping Confirmation Generator, Customer Database, PDF Export, Dark Mode, Logout Button, User Display, Pricing Page, Quotation/Invoice History, Usage Stats Dashboard, Template Categories |
+| **COMPLETE** | 19 | Message Formatter, Quotation Generator, Invoice Generator, Landing Page, WhatsApp Integration, Template System (full), Auth System (full), Order Recap Generator, Payment Reminder Generator, Shipping Confirmation Generator, Customer Database, PDF Export, Dark Mode, Logout Button, User Display, Pricing Page, Quotation/Invoice History, Usage Stats Dashboard, Template Categories, Product Catalog Integration |
 
-| **NOT BUILT** | 2 | Product Catalog, Team Collaboration |
+| **NOT BUILT** | 1 | Team Collaboration |
 
 ### Completed Features (Built)
 
