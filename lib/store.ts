@@ -326,3 +326,65 @@ export function useUsageStats() {
 
   return { stats, isLoaded, recordUsage };
 }
+
+// Product Store
+const PRODUCTS_KEY = 'adminku_products';
+
+export function useProducts() {
+  const [products, setProducts] = useState<import('./types').Product[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(PRODUCTS_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setProducts(parsed.map((item: import('./types').Product) => ({
+          ...item,
+          createdAt: new Date(item.createdAt),
+          updatedAt: new Date(item.updatedAt),
+        })));
+      }
+    } catch (e) {
+      console.warn('Failed to load products:', e);
+    }
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+    }
+  }, [products, isLoaded]);
+
+  const addProduct = useCallback((product: Omit<import('./types').Product, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const newProduct: import('./types').Product = {
+      ...product,
+      id: Math.random().toString(36).substring(7),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    setProducts((prev) => [newProduct, ...prev]);
+    return newProduct;
+  }, []);
+
+  const updateProduct = useCallback((id: string, updates: Partial<import('./types').Product>) => {
+    setProducts((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, ...updates, updatedAt: new Date() } : p
+      )
+    );
+  }, []);
+
+  const deleteProduct = useCallback((id: string) => {
+    setProducts((prev) => prev.filter((p) => p.id !== id));
+  }, []);
+
+  return {
+    products,
+    isLoaded,
+    addProduct,
+    updateProduct,
+    deleteProduct,
+  };
+}

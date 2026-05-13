@@ -108,3 +108,14 @@ export interface UsageStats {
   totalInvoices: number;
   totalTemplates: number;
 }
+
+// Product
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  description?: string;
+  category?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
