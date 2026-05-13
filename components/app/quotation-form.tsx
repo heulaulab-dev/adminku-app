@@ -3,92 +3,15 @@
 import { useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus, Trash2, Copy, Share2, Check, Bookmark, Package, X } from 'lucide-react';
+import { Plus, Trash2, Copy, Share2, Check, Bookmark, Package } from 'lucide-react';
 import { quotationSchema, type QuotationInput } from '@/lib/schemas';
 import { formatQuotation, formatMoney } from '@/lib/formatters';
 import { useToast } from '@/components/shared/toast';
 import { TemplateModal } from '@/components/shared/template-modal';
-import { useTemplates, useQuotationHistory, useUsageStats, useProducts } from '@/lib/store';
-import type { Product } from '@/lib/types';
+import { useTemplates, useQuotationHistory, useUsageStats, useProducts, useCustomers } from '@/lib/store';
+import { ProductPickerModal } from './product-picker-modal';
+import type { Product, Customer } from '@/lib/types';
 import { cn } from '@/lib/utils';
-
-function ProductPicker({
-  isOpen,
-  onClose,
-  onSelect,
-  products,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  onSelect: (product: Product) => void;
-  products: Product[];
-}) {
-  const [search, setSearch] = useState('');
-
-  if (!isOpen) return null;
-
-  const filtered = products.filter(
-    (p) =>
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.category?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="flex h-[80vh] w-full max-w-lg flex-col rounded-2xl bg-[var(--color-surface)] shadow-xl">
-        <div className="flex items-center justify-between border-b border-[var(--color-border)] p-4">
-          <h2 className="flex items-center gap-2 font-semibold text-[var(--color-text-primary)]">
-            <Package className="h-5 w-5 text-[var(--color-primary)]" />
-            Pilih dari Katalog
-          </h2>
-          <button onClick={onClose} className="rounded-lg p-1 text-[var(--color-text-muted)] hover:bg-[var(--color-bg)]">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-        <div className="border-b border-[var(--color-border)] p-4">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari produk..."
-            className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-2 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-primary)] focus:outline-none"
-          />
-        </div>
-        <div className="flex-1 overflow-y-auto p-4">
-          {filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <Package className="mb-4 h-12 w-12 text-[var(--color-text-muted)]" />
-              <p className="text-[var(--color-text-secondary)]">
-                {search ? 'Produk tidak ditemukan' : 'Belum ada produk di katalog'}
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {filtered.map((product) => (
-                <button
-                  key={product.id}
-                  onClick={() => {
-                    onSelect(product);
-                    onClose();
-                  }}
-                  className="flex w-full items-center justify-between rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-left transition-colors hover:border-[var(--color-primary)]/30 hover:bg-[var(--color-bg)]"
-                >
-                  <div>
-                    <p className="font-medium text-[var(--color-text-primary)]">{product.name}</p>
-                    {product.category && (
-                      <p className="text-xs text-[var(--color-text-muted)]">{product.category}</p>
-                    )}
-                  </div>
-                  <span className="font-semibold text-[var(--color-primary)]">{formatMoney(product.price)}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function QuotationForm() {
   const [preview, setPreview] = useState('');
@@ -171,6 +94,22 @@ export function QuotationForm() {
   const handleSelectProduct = (product: Product, index: number) => {
     setValue(`items.${index}.name`, product.name);
     setValue(`items.${index}.price`, product.price);
+  };
+
+  const handleAddProducts = (selectedProducts: Product[], customer?: Customer) => {
+    // Append each product as new item
+    selectedProducts.forEach((product) => {
+      append({ id: Math.random().toString(), name: product.name, quantity: 1, price: product.price });
+    });
+
+    // Auto-fill customer if selected
+    if (customer) {
+      setValue('customerName', customer.name);
+      setValue('customerPhone', customer.phone);
+      setValue('customerAddress', customer.address || '');
+    }
+
+    showToast(`${selectedProducts.length} produk ditambahkan!`);
   };
 
   return (
@@ -376,15 +315,10 @@ export function QuotationForm() {
         />
       </form>
 
-      <ProductPicker
+      <ProductPickerModal
         isOpen={showProductPicker}
         onClose={() => setShowProductPicker(false)}
-        onSelect={(product) => {
-          handleSelectProduct(product, 0);
-          setShowProductPicker(false);
-          showToast(`${product.name} ditambahkan!`);
-        }}
-        products={products}
+        onAdd={handleAddProducts}
       />
     </>
   );
