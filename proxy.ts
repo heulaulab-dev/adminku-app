@@ -2,22 +2,29 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { auth } from './auth';
 
-const publicRoutes = ['/', '/login', '/kebijakan'];
+// Routes that require authentication
+const PROTECTED_PREFIX = '/app';
 
-export default auth(function middleware(req: NextRequest & { auth: { user?: unknown } | null }) {
-  const isLoggedIn = !!(req as { auth: { user?: unknown } | null }).auth?.user;
-  const isAppRoute = req.nextUrl.pathname.startsWith('/app');
-  const isPublicRoute = publicRoutes.some((route) => req.nextUrl.pathname === route);
+// Extend NextRequest with auth property from NextAuth
+type AuthenticatedRequest = NextRequest & {
+  auth: { user?: unknown } | null;
+};
 
-  // If trying to access /app without auth, redirect to login
-  if (isAppRoute && !isLoggedIn) {
+export default auth(function middleware(req: NextRequest) {
+  const { pathname, search } = req.nextUrl;
+  const authReq = req as AuthenticatedRequest;
+  const isLoggedIn = !!authReq.auth?.user;
+  const isProtectedRoute = pathname.startsWith(PROTECTED_PREFIX);
+
+  // Unauthenticated users accessing protected routes → redirect to login
+  if (isProtectedRoute && !isLoggedIn) {
     const loginUrl = new URL('/login', req.url);
-    loginUrl.searchParams.set('callbackUrl', req.nextUrl.pathname);
+    loginUrl.searchParams.set('callbackUrl', pathname + search);
     return NextResponse.redirect(loginUrl);
   }
 
-  // If logged in and on login page, redirect to dashboard
-  if (req.nextUrl.pathname === '/login' && isLoggedIn) {
+  // Authenticated users on login page → redirect to dashboard
+  if (pathname === '/login' && isLoggedIn) {
     return NextResponse.redirect(new URL('/app', req.url));
   }
 
