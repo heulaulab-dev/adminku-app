@@ -1,26 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Search, FileText } from 'lucide-react';
 import { TemplateCard } from './template-card';
 import { useTemplates, DEFAULT_TEMPLATES } from '@/lib/store';
 import { TemplateModal } from '@/components/shared/template-modal';
 import { useToast } from '@/components/shared/toast';
 import type { Template } from '@/lib/types';
+import { cn } from '@/lib/utils';
+
+const CATEGORIES = [
+  { id: 'all', label: 'Semua' },
+  { id: 'greeting', label: 'Salam' },
+  { id: 'payment', label: 'Pembayaran' },
+  { id: 'shipping', label: 'Pengiriman' },
+  { id: 'closing', label: 'Penutup' },
+];
 
 export function TemplateList() {
   const { templates, deleteTemplate, updateTemplate, isLoaded } = useTemplates();
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
   const { showToast } = useToast();
 
   const allTemplates = [...DEFAULT_TEMPLATES, ...templates];
 
-  const filteredTemplates = allTemplates.filter(
-    (t) =>
-      t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.content.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredTemplates = useMemo(() => {
+    return allTemplates.filter((t) => {
+      const matchesSearch =
+        t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.content.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory === 'all' || t.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [allTemplates, searchQuery, selectedCategory]);
 
   const handleDelete = (id: string) => {
     if (window.confirm('Hapus template ini?')) {
@@ -54,13 +68,33 @@ export function TemplateList() {
         />
       </div>
 
+      {/* Category Filter */}
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {CATEGORIES.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => setSelectedCategory(cat.id)}
+            className={cn(
+              'shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+              selectedCategory === cat.id
+                ? 'bg-[var(--color-primary)] text-white'
+                : 'border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:border-[var(--color-primary)]/30'
+            )}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
       {/* Templates Grid */}
       {filteredTemplates.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] py-12">
           <FileText className="mb-4 h-12 w-12 text-[var(--color-text-muted)]" />
           <p className="mb-2 font-medium text-[var(--color-text-primary)]">Template tidak ditemukan</p>
           <p className="mb-4 text-sm text-[var(--color-text-secondary)]">
-            {searchQuery ? 'Coba kata kunci lain' : 'Yuk bikin template pertamamu'}
+            {searchQuery || selectedCategory !== 'all'
+              ? 'Coba kata kunci atau kategori lain'
+              : 'Yuk bikin template pertamamu'}
           </p>
         </div>
       ) : (

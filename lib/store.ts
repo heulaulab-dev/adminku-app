@@ -160,3 +160,169 @@ export const DEFAULT_TEMPLATES: Template[] = [
     updatedAt: new Date(),
   },
 ];
+
+// Quotation History Store
+const QUOTATION_HISTORY_KEY = 'adminku_quotation_history';
+
+export function useQuotationHistory() {
+  const [history, setHistory] = useState<import('./types').QuotationHistory[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(QUOTATION_HISTORY_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setHistory(parsed.map((item: import('./types').QuotationHistory) => ({
+          ...item,
+          createdAt: new Date(item.createdAt),
+        })));
+      }
+    } catch (e) {
+      console.warn('Failed to load quotation history:', e);
+    }
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem(QUOTATION_HISTORY_KEY, JSON.stringify(history));
+    }
+  }, [history, isLoaded]);
+
+  const addQuotation = useCallback((quotation: Omit<import('./types').QuotationHistory, 'id' | 'createdAt'>) => {
+    const newQuotation: import('./types').QuotationHistory = {
+      ...quotation,
+      id: Math.random().toString(36).substring(7),
+      createdAt: new Date(),
+    };
+    setHistory((prev) => [newQuotation, ...prev].slice(0, 100));
+    return newQuotation;
+  }, []);
+
+  const deleteQuotation = useCallback((id: string) => {
+    setHistory((prev) => prev.filter((q) => q.id !== id));
+  }, []);
+
+  return { history, isLoaded, addQuotation, deleteQuotation };
+}
+
+// Invoice History Store
+const INVOICE_HISTORY_KEY = 'adminku_invoice_history';
+
+export function useInvoiceHistory() {
+  const [history, setHistory] = useState<import('./types').InvoiceHistory[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(INVOICE_HISTORY_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setHistory(parsed.map((item: import('./types').InvoiceHistory) => ({
+          ...item,
+          createdAt: new Date(item.createdAt),
+        })));
+      }
+    } catch (e) {
+      console.warn('Failed to load invoice history:', e);
+    }
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem(INVOICE_HISTORY_KEY, JSON.stringify(history));
+    }
+  }, [history, isLoaded]);
+
+  const addInvoice = useCallback((invoice: Omit<import('./types').InvoiceHistory, 'id' | 'createdAt'>) => {
+    const newInvoice: import('./types').InvoiceHistory = {
+      ...invoice,
+      id: Math.random().toString(36).substring(7),
+      createdAt: new Date(),
+    };
+    setHistory((prev) => [newInvoice, ...prev].slice(0, 100));
+    return newInvoice;
+  }, []);
+
+  const deleteInvoice = useCallback((id: string) => {
+    setHistory((prev) => prev.filter((i) => i.id !== id));
+  }, []);
+
+  return { history, isLoaded, addInvoice, deleteInvoice };
+}
+
+// Usage Stats Store
+const USAGE_STATS_KEY = 'adminku_usage_stats';
+
+function getDateString(date: Date): string {
+  return date.toISOString().split('T')[0];
+}
+
+export function useUsageStats() {
+  const [stats, setStats] = useState<import('./types').UsageStats>({
+    lastUsedDate: null,
+    currentStreak: 0,
+    longestStreak: 0,
+    totalQuotations: 0,
+    totalInvoices: 0,
+    totalTemplates: 0,
+  });
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(USAGE_STATS_KEY);
+      if (stored) {
+        setStats(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.warn('Failed to load usage stats:', e);
+    }
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem(USAGE_STATS_KEY, JSON.stringify(stats));
+    }
+  }, [stats, isLoaded]);
+
+  const recordUsage = useCallback((type: 'quotation' | 'invoice' | 'template') => {
+    const today = getDateString(new Date());
+
+    setStats((prev) => {
+      // Calculate if streak continues
+      let newStreak = prev.currentStreak;
+      if (prev.lastUsedDate) {
+        const lastDate = new Date(prev.lastUsedDate);
+        const currentDate = new Date(today);
+        const diffDays = Math.floor((currentDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) {
+          // Same day, no change
+        } else if (diffDays === 1) {
+          // Consecutive day
+          newStreak = prev.currentStreak + 1;
+        } else {
+          // Streak broken
+          newStreak = 1;
+        }
+      } else {
+        newStreak = 1;
+      }
+
+      return {
+        lastUsedDate: today,
+        currentStreak: newStreak,
+        longestStreak: Math.max(prev.longestStreak, newStreak),
+        totalQuotations: type === 'quotation' ? prev.totalQuotations + 1 : prev.totalQuotations,
+        totalInvoices: type === 'invoice' ? prev.totalInvoices + 1 : prev.totalInvoices,
+        totalTemplates: type === 'template' ? prev.totalTemplates + 1 : prev.totalTemplates,
+      };
+    });
+  }, []);
+
+  return { stats, isLoaded, recordUsage };
+}

@@ -72,3 +72,39 @@ export interface Customer {
   createdAt: Date;
   updatedAt: Date;
 }
+
+// Quotation History
+export interface QuotationHistory {
+  id: string;
+  customerName: string;
+  customerPhone?: string;
+  items: QuotationItem[];
+  notes?: string;
+  total: number;
+  formattedMessage: string;
+  createdAt: Date;
+}
+
+// Invoice History
+export interface InvoiceHistory {
+  id: string;
+  invoiceNumber: string;
+  customerName: string;
+  customerPhone?: string;
+  items: InvoiceItem[];
+  notes?: string;
+  paymentMethod?: string;
+  total: number;
+  formattedMessage: string;
+  createdAt: Date;
+}
+
+// Usage Stats
+export interface UsageStats {
+  lastUsedDate: string | null;
+  currentStreak: number;
+  longestStreak: number;
+  totalQuotations: number;
+  totalInvoices: number;
+  totalTemplates: number;
+}

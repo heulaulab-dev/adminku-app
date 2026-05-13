@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { MessageSquare, FileText, Receipt, Bookmark, ArrowRight, Truck, Bell, ClipboardList, Users } from 'lucide-react';
+import { MessageSquare, FileText, Receipt, Bookmark, Truck, Bell, ClipboardList, Users } from 'lucide-react';
+import { StatsDashboard } from '@/components/app/stats-dashboard';
 
 const quickActions = [
   {
@@ -75,23 +76,29 @@ export default function DashboardPage() {
         </p>
       </div>
 
+      {/* Stats Dashboard */}
+      <StatsDashboard />
+
       {/* Quick Actions */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {quickActions.map((action) => (
-          <Link
-            key={action.href}
-            href={action.href}
-            className="group flex items-center gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3 transition-all hover:border-[var(--color-primary)]/30 hover:shadow-sm"
-          >
-            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${action.color} text-white`}>
-              <action.icon className="h-5 w-5" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold text-[var(--color-text-primary)]">{action.title}</p>
-              <p className="truncate text-xs text-[var(--color-text-secondary)]">{action.description}</p>
-            </div>
-          </Link>
-        ))}
+      <div>
+        <h2 className="mb-3 text-sm font-medium text-[var(--color-text-muted)]">Menu</h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {quickActions.map((action) => (
+            <Link
+              key={action.href}
+              href={action.href}
+              className="group flex items-center gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3 transition-all hover:border-[var(--color-primary)]/30 hover:shadow-sm"
+            >
+              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${action.color} text-white`}>
+                <action.icon className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-[var(--color-text-primary)]">{action.title}</p>
+                <p className="truncate text-xs text-[var(--color-text-secondary)]">{action.description}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* Tips */}

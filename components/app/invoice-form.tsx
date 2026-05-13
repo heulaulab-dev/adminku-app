@@ -9,7 +9,7 @@ import { formatInvoice, formatMoney } from '@/lib/formatters';
 import { useToast } from '@/components/shared/toast';
 import { INVOICE_DEFAULTS } from '@/lib/constants';
 import { TemplateModal } from '@/components/shared/template-modal';
-import { useTemplates } from '@/lib/store';
+import { useTemplates, useInvoiceHistory, useUsageStats } from '@/lib/store';
 import { cn } from '@/lib/utils';
 
 export function InvoiceForm() {
@@ -19,6 +19,8 @@ export function InvoiceForm() {
   const [templatePreview, setTemplatePreview] = useState('');
   const { showToast } = useToast();
   const { addTemplate } = useTemplates();
+  const { addInvoice } = useInvoiceHistory();
+  const { recordUsage } = useUsageStats();
 
   const invoiceNumber = `${INVOICE_DEFAULTS.prefix}-${Date.now().toString(36).toUpperCase()}`;
 
@@ -53,6 +55,20 @@ export function InvoiceForm() {
     });
     setPreview(formatted);
     showToast('Invoice sudah jadi!');
+
+    // Save to history
+    const totalAmount = data.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    addInvoice({
+      invoiceNumber,
+      customerName: data.customerName,
+      customerPhone: data.customerPhone,
+      items: data.items,
+      notes: data.notes,
+      paymentMethod: data.paymentMethod,
+      total: totalAmount,
+      formattedMessage: formatted,
+    });
+    recordUsage('invoice');
   };
 
   const handleCopy = async () => {
