@@ -2,16 +2,14 @@
 
 WhatsApp Admin Toolkit untuk bisnis online Indonesia.
 
-<img src="https://img.shields.io/badge/version-0.3.0-blue.svg" alt="version">
-
 **Bosen ngetik pesan WhatsApp yang sama terus?** AdminKu bantu kamu format pesan, bikin quotation, invoice, dan masih banyak lagi — tinggal copy paste ke WhatsApp.
 
 ## Fitur
 
 ### Core Features
 - **Message Formatter** — Format teks dengan bold, italic, strikethrough, bullet
-- **Quotation Generator** — Bikin quotation profesional dalam detik
-- **Invoice Generator** — Auto invoice number + berbagai metode pembayaran
+- **Quotation Generator** — Bikin quotation profesional dalam detik, simpan sebagai template, lihat history
+- **Invoice Generator** — Auto invoice number + berbagai metode pembayaran, export PDF
 - **Order Recap** — Ringkasan pesanan untuk customer
 - **Payment Reminder** — Pengingat pembayaran otomatis
 - **Shipping Confirmation** — Format konfirmasi pengiriman
@@ -21,20 +19,33 @@ WhatsApp Admin Toolkit untuk bisnis online Indonesia.
 - Save hasil generate sebagai template
 - 5 default templates siap pakai
 - Edit, hapus, cari template
+- Filter berdasarkan kategori: Semua, Salam, Pembayaran, Pengiriman, Penutup
 
 ### Export & Share
 - Copy to clipboard
-- Share langsung ke WhatsApp
-- Export PDF
+- Share langsung ke WhatsApp (Web Share API)
+- Export PDF (html2canvas + jsPDF)
+
+### Auth & Dashboard
+- Login dengan Google OAuth
+- Usage stats dengan streak tracking
+- History quotation & invoice
+
+### UI/UX
+- Dark mode toggle
+- Mobile-first responsive design
+- Bottom navigation
+- Toast notifications
 
 ## Tech Stack
 
 - **Frontend**: Next.js 16 (App Router) + React 19
 - **Styling**: Tailwind CSS v4 + CSS Variables
 - **Auth**: NextAuth.js v5 (Google OAuth)
-- **Forms**: React Hook Form + Zod
+- **Forms**: React Hook Form + Zod validation
 - **Icons**: Lucide React
-- **Storage**: localStorage (frontend) + Neon Postgres (planned)
+- **Storage**: localStorage (frontend)
+- **PDF**: html2canvas + jsPDF
 - **Deployment**: Vercel
 
 ## Quick Start
@@ -52,8 +63,6 @@ cd adminku/apps/web
 
 # Install dependencies
 npm install
-# or
-bun install
 
 # Copy environment file
 cp .env.local.example .env.local
@@ -62,6 +71,7 @@ cp .env.local.example .env.local
 # GOOGLE_CLIENT_ID=your_google_client_id
 # GOOGLE_CLIENT_SECRET=your_google_client_secret
 # NEXTAUTH_SECRET=generate_with_openssl_rand_base64_32
+# NEXTAUTH_URL=http://localhost:3000
 
 # Run development server
 npm run dev
@@ -75,28 +85,31 @@ Open [http://localhost:3000](http://localhost:3000) to start.
 apps/web/
 ├── app/
 │   ├── (auth)/          # Auth pages (login)
-│   ├── api/auth/        # NextAuth API routes
+│   ├── api/
+│   │   └── auth/        # NextAuth API routes
 │   ├── app/             # Dashboard pages
 │   │   ├── compose/     # Message formatter
-│   │   ├── customers/    # Customer database
-│   │   ├── invoices/     # Invoice generator
-│   │   ├── order-recap/  # Order recap
+│   │   ├── customers/   # Customer database
+│   │   ├── invoices/     # Invoice list & generator
+│   │   ├── order-recap/ # Order recap generator
 │   │   ├── payment-reminder/
-│   │   ├── quotes/       # Quotation generator
+│   │   ├── quotes/      # Quotation list & generator
 │   │   ├── shipping-confirmation/
-│   │   └── templates/    # Template library
+│   │   ├── stats/       # Usage stats dashboard
+│   │   └── templates/  # Template library
+│   ├── pricing/         # Pricing page
 │   └── page.tsx         # Landing page
 ├── components/
 │   ├── app/             # Dashboard components
 │   ├── landing/         # Landing page components
-│   └── shared/          # Shared UI (toast, modal)
+│   └── shared/          # Shared UI (toast, modal, nav)
 └── lib/
-    ├── constants.ts      # App constants
-    ├── formatters.ts     # Text formatting utilities
-    ├── schemas.ts        # Zod validation schemas
-    ├── store.ts          # localStorage state (templates, customers)
-    ├── types.ts          # TypeScript types
-    └── utils.ts          # Utility functions
+    ├── constants.ts     # App constants
+    ├── formatters.ts    # Text formatting utilities
+    ├── schemas.ts       # Zod validation schemas
+    ├── store.ts         # localStorage state management
+    ├── types.ts         # TypeScript types
+    └── utils.ts         # Utility functions
 ```
 
 ## Environment Variables
@@ -122,19 +135,21 @@ NEXTAUTH_URL=http://localhost:3000
 
 | Route | Description |
 |-------|-------------|
-| `/` | Landing page |
-| `/login` | Login with Google |
-| `/app` | Dashboard |
+| `/` | Landing page with hero, features, FAQ |
+| `/login` | Login with Google OAuth |
+| `/pricing` | Pricing page with 3 tiers |
+| `/app` | Dashboard home |
 | `/app/compose` | Message formatter |
-| `/app/quotes` | Quotations list |
+| `/app/quotes` | Quotations list with history |
 | `/app/quotes/new` | New quotation |
-| `/app/invoices` | Invoices list |
+| `/app/invoices` | Invoices list with history |
 | `/app/invoices/new` | New invoice |
 | `/app/order-recap` | Order recap generator |
 | `/app/payment-reminder` | Payment reminder generator |
 | `/app/shipping-confirmation` | Shipping confirmation |
 | `/app/customers` | Customer database |
 | `/app/templates` | Template library |
+| `/app/stats` | Usage stats dashboard |
 
 ## Deployment
 
@@ -146,13 +161,9 @@ cd apps/web
 vercel deploy --prod
 ```
 
-## Contributing
+## Changelog
 
-1. Fork the repo
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+See [CHANGELOG.md](./CHANGELOG.md) for version history.
 
 ## License
 

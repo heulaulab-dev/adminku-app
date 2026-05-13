@@ -78,6 +78,7 @@ export interface QuotationHistory {
   id: string;
   customerName: string;
   customerPhone?: string;
+  customerAddress?: string;
   items: QuotationItem[];
   notes?: string;
   total: number;
@@ -91,6 +92,7 @@ export interface InvoiceHistory {
   invoiceNumber: string;
   customerName: string;
   customerPhone?: string;
+  customerAddress?: string;
   items: InvoiceItem[];
   notes?: string;
   paymentMethod?: string;
@@ -107,4 +109,15 @@ export interface UsageStats {
   totalQuotations: number;
   totalInvoices: number;
   totalTemplates: number;
+}
+
+// Product
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  description?: string;
+  category?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

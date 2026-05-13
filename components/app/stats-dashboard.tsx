@@ -1,6 +1,6 @@
 'use client';
 
-import { Flame, FileText, Receipt, Bookmark2 } from 'lucide-react';
+import { Flame, FileText, Receipt, Bookmark } from 'lucide-react';
 import { useUsageStats } from '@/lib/store';
 import { cn } from '@/lib/utils';
 
@@ -80,7 +80,7 @@ export function StatsDashboard() {
           bgColor="bg-[var(--color-secondary)]/10"
         />
         <StatCard
-          icon={<Bookmark2 className="h-5 w-5 text-[var(--color-info)]" />}
+          icon={<Bookmark className="h-5 w-5 text-[var(--color-info)]" />}
           label="Templates"
           value={stats.totalTemplates}
           bgColor="bg-[var(--color-info)]/10"

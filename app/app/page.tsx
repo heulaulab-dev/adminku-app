@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { MessageSquare, FileText, Receipt, Bookmark, Truck, Bell, ClipboardList, Users } from 'lucide-react';
+import { MessageSquare, FileText, Receipt, Bookmark, Truck, Bell, ClipboardList, Users, Package } from 'lucide-react';
 import { StatsDashboard } from '@/components/app/stats-dashboard';
 
 const quickActions = [
@@ -46,6 +46,13 @@ const quickActions = [
     description: 'Pengingat pembayaran',
     icon: Bell,
     color: 'bg-orange-500',
+  },
+  {
+    href: '/app/products',
+    title: 'Produk',
+    description: 'Katalog produk',
+    icon: Package,
+    color: 'bg-indigo-500',
   },
   {
     href: '/app/templates',
